@@ -33,7 +33,6 @@ export class FaqCommands {
   @SlashCommand({
     name: 'faq',
     description: 'Frequently Asked Questions',
-    guilds: [process.env.DISCORD_GUILD_ID],
   })
   public async onFaq(@Context() [interaction]: SlashCommandContext, @Options() { search }: FaqCommandDto) {
     try {
