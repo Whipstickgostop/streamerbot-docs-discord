@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+data
+*.log
+.nest
+.output
+.vscode
+.deploy
+.backup

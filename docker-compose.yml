@@ -1,0 +1,10 @@
+services:
+  discord-docs-bot:
+      image: registry.hunter2.pw/streamerbot/discord-docs-bot:prod
+      build:
+        context: ./
+        target: prod
+      restart: unless-stopped
+      volumes:
+        - '.:/app'
+      env_file: .env

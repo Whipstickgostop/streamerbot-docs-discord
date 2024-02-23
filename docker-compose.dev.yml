@@ -1,0 +1,9 @@
+services:
+  discord-docs-bot:
+      build:
+        target: dev
+      command: pnpm run --filter @streamerbot/discord-docs-bot dev
+      restart: unless-stopped
+      volumes:
+        - '.:/app'
+      env_file: .env
