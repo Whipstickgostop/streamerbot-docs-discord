@@ -1,16 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { ActionRowBuilder } from 'discord.js';
-import { Button, ButtonContext, Context, SelectedStrings, StringSelect, StringSelectContext } from 'necord';
+import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
+import {
+  Button,
+  ButtonContext,
+  ComponentParam,
+  Context,
+  SelectedStrings,
+  StringSelect,
+  StringSelectContext,
+} from 'necord';
 import { FaqService } from './faq.service';
 
 @Injectable()
 export class FaqComponents {
   constructor(private readonly faqService: FaqService) {}
 
+  @Button('youtube/:id')
+  public async onYoutubeButton(@Context() [interaction]: ButtonContext, @ComponentParam('id') id: string) {
+    return interaction.reply({ content: `https://www.youtube.com/watch?v=${id}`, ephemeral: true });
+  }
+
   @Button('FAQ_MENU_BUTTON')
   public async onFaqMenuButton(@Context() [interaction]: ButtonContext) {
-    const row = new ActionRowBuilder().addComponents(this.faqService.generateMenuComponent());
-    // @ts-expect-error - Discord.js types incorrect?
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(this.faqService.generateMenuComponent());
     return interaction.reply({ content: 'Select an FAQ', components: [row], ephemeral: true });
   }
 

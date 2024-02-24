@@ -38,12 +38,26 @@ export class FaqCommands {
     try {
       const faq = this.faqService.getFaqs().find((faq) => faq._path === search);
       if (!faq?.description || !faq?.content) return interaction.reply({ content: 'FAQ not found.' });
+
+      // Add link to docs
       const docsButton = new ButtonBuilder()
         .setLabel('View on Docs')
         .setStyle(ButtonStyle.Link)
-        .setURL('https://docs.streamer.bot/get-started/faq');
-      const row = new ActionRowBuilder().addComponents(docsButton);
-      // @ts-expect-error - Discord.js types incorrect?
+        .setURL('https://docs.streamer.bot/get-started/faq')
+        .setEmoji('📄');
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(docsButton);
+
+      // Add YouTube link if available
+      if (faq.youtubeId) {
+        row.addComponents(
+          new ButtonBuilder()
+            .setCustomId(`youtube/${faq.youtubeId}`)
+            .setLabel('YouTube Tutorial')
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji('▶️'),
+        );
+      }
+
       return interaction.reply({ embeds: [this.faqService.generateEmbed(faq)], components: [row] });
     } catch (e) {
       this.logger.error('Error respondng to /faq request', e);
