@@ -9,7 +9,7 @@ import { DiscordService } from './discord.service';
     NecordModule.forRoot({
       token: process.env.DISCORD_TOKEN,
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
-      development: [process.env.DISCORD_GUILD_ID],
+      development: process.env.NODE_ENV !== 'production' ? [process.env.DISCORD_GUILD_ID] : false,
     }),
   ],
   providers: [DiscordService],
