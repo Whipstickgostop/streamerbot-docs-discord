@@ -20,7 +20,7 @@ export class FaqService implements OnModuleInit {
    */
   public async fetchFaqs() {
     try {
-      const res = await fetch('https://docs.streamer.bot/api/faqs.json');
+      const res = await fetch('https://docs.streamer.bot/api/faqs.json', { cache: 'no-cache' });
       const data = await res.json();
       this.faqs = data?.length ? data : [];
     } catch (e) {
