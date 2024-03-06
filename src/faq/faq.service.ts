@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { EmbedBuilder, StringSelectMenuBuilder } from 'discord.js';
 import { FaqItem } from './dto/faq.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class FaqService implements OnModuleInit {
@@ -18,6 +19,7 @@ export class FaqService implements OnModuleInit {
   /**
    * Fetch the latest FAQ data from the Streamer.bot docs
    */
+  @Cron('0 * * * *')
   public async fetchFaqs() {
     try {
       const res = await fetch('https://docs.streamer.bot/api/faqs.json', { cache: 'no-cache' });
