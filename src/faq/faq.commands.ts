@@ -4,30 +4,15 @@ import { FaqCommandDto } from './dto/faq.dto';
 import { FaqService } from './faq.service';
 import { FaqAutocompleteInterceptor } from './interceptors/faq.interceptor';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { SearchService } from '../search/search.service';
 
 @Injectable()
 export class FaqCommands {
   private readonly logger = new Logger(FaqCommands.name);
 
-  constructor(private readonly faqService: FaqService) {}
-
-  @SlashCommand({
-    name: 'refresh',
-    description: `Refresh documentation contents`,
-    guilds: [process.env.DISCORD_GUILD_ID],
-  })
-  public async onReload(@Context() [interaction]: SlashCommandContext) {
-    try {
-      await this.faqService.fetchFaqs();
-      return interaction.reply({ content: 'Docs reloaded', ephemeral: true });
-    } catch (e) {
-      this.logger.error('Error reloading docs', e);
-      return interaction.reply({
-        content: 'An unknown error occurred',
-        ephemeral: true,
-      });
-    }
-  }
+  constructor(
+    private readonly faqService: FaqService,
+  ) {}
 
   @UseInterceptors(FaqAutocompleteInterceptor)
   @SlashCommand({

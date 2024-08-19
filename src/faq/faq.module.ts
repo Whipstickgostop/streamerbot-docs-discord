@@ -6,5 +6,6 @@ import { FaqComponents } from './faq.components';
 
 @Module({
   providers: [FaqService, FaqCommands, FaqComponents, FaqAutocompleteInterceptor],
+  exports: [FaqService],
 })
 export class FaqModule {}

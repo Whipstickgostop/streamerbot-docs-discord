@@ -8,7 +8,7 @@ export class FaqService implements OnModuleInit {
   private readonly logger = new Logger(FaqService.name);
   private faqs: FaqItem[] = [];
 
-  public async onModuleInit() {
+  public onModuleInit() {
     this.fetchFaqs();
   }
 
@@ -24,7 +24,9 @@ export class FaqService implements OnModuleInit {
     try {
       const res = await fetch('https://docs.streamer.bot/api/faqs.json', { cache: 'no-cache' });
       const data = await res.json();
-      this.faqs = data?.length ? data : [];
+      this.faqs = data?.length ? data : this.faqs;
+      this.logger.log(`Fetched ${this.faqs.length} faqs`);
+      return this.faqs;
     } catch (e) {
       this.logger.error('Failed to fetch faqs', e);
     }

@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Client } from 'discord.js';
-import { Once, Context, ContextOf } from 'necord';
+import { Context, ContextOf, Once } from 'necord';
 
 @Injectable()
 export class DiscordService implements OnModuleDestroy {
@@ -11,10 +11,6 @@ export class DiscordService implements OnModuleDestroy {
   public async onReady(@Context() [client]: ContextOf<'ready'>) {
     this.logger.log(`🚀 Bot logged in as ${client.user.username}`);
     this.client = client;
-
-    if (process.env.NODE_ENV !== 'production') {
-      await this.clearCommands();
-    }
   }
 
   async onModuleDestroy(signal?: string) {
@@ -28,6 +24,14 @@ export class DiscordService implements OnModuleDestroy {
 
   private async clearCommands() {
     await this.getClient().application.commands.set([]);
+
+    // Development guild
+    if (process.env.DISCORD_GUILD_ID) {
+      const guild = await this.getClient().guilds.fetch(process.env.DISCORD_GUILD_ID);
+      await guild.commands.set([]);
+    }
+
+    // Cached guilds
     for (const guild of this.getClient().guilds.cache.values()) {
       await guild.commands.set([]);
     }
