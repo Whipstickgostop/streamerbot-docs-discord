@@ -24,6 +24,7 @@ export class SearchCommands {
     name: 'refresh',
     description: `Refresh documentation contents`,
     guilds: [process.env.DISCORD_GUILD_ID],
+    defaultMemberPermissions: ['Administrator'],
   })
   public async onReload(@Context() [interaction]: SlashCommandContext) {
     try {

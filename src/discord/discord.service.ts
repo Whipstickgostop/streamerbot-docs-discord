@@ -1,6 +1,6 @@
-import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { Client } from 'discord.js';
-import { Context, ContextOf, Once } from 'necord';
+import { Injectable, Logger, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
+import { Client, EmbedBuilder } from 'discord.js';
+import { Context, ContextOf, Once, SlashCommand, SlashCommandContext } from 'necord';
 
 @Injectable()
 export class DiscordService implements OnModuleDestroy {
@@ -15,7 +15,7 @@ export class DiscordService implements OnModuleDestroy {
 
   async onModuleDestroy(signal?: string) {
     this.logger.log(`Shutting down... (${signal})`);
-    return await this.clearCommands();
+    await this.clearCommands();
   }
 
   public getClient() {
@@ -34,6 +34,36 @@ export class DiscordService implements OnModuleDestroy {
     // Cached guilds
     for (const guild of this.getClient().guilds.cache.values()) {
       await guild.commands.set([]);
+    }
+  }
+
+  @SlashCommand({
+    name: 'clear',
+    description: `Remove all commands`,
+    guilds: [process.env.DISCORD_GUILD_ID],
+    defaultMemberPermissions: ['Administrator'],
+  })
+  public async onClear(@Context() [interaction]: SlashCommandContext) {
+    if (process.env.NODE_ENV === 'production') {
+      return interaction.reply({ content: 'This command is disabled in production', ephemeral: true });
+    }
+
+    try {
+      await this.clearCommands();
+      const embed = new EmbedBuilder()
+      .setAuthor({
+        name: `All commands removed`,
+      })
+      .setColor('#a257ed')
+      .setTimestamp();
+
+      return interaction.reply({ embeds: [embed], ephemeral: true });
+    } catch (e) {
+      this.logger.error('Error removing docs commands', e);
+      return interaction.reply({
+        content: 'An unknown error occurred while removing docs commands...',
+        ephemeral: true,
+      });
     }
   }
 }
