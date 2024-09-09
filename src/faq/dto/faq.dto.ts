@@ -15,6 +15,8 @@ export type FaqItem = {
   content: string;
   images?: string[];
   youtubeId?: string;
+  index?: number;
+  url?: string;
 };
 
 export class FaqCommandDto {

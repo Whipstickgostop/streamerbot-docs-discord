@@ -24,13 +24,11 @@ export class FaqCommands {
       const faq = this.faqService.getFaqs().find((faq) => faq._path === search);
       if (!faq?.description || !faq?.content) return interaction.reply({ content: 'FAQ not found.' });
 
-      const index = faq._file.split('/').at(-1).match(/^(\d+)\./)?.at(1) ?? 1;
-
       // Add link to docs
       const docsButton = new ButtonBuilder()
         .setLabel('View on Docs')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://docs.streamer.bot/get-started/faq#faq-${index}`)
+        .setURL(faq.url ?? `https://docs.streamer.bot/get-started/faq`)
         .setEmoji('📄');
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(docsButton);
 

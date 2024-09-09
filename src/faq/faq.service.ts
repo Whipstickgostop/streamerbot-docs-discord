@@ -24,7 +24,14 @@ export class FaqService implements OnModuleInit {
     try {
       const res = await fetch('https://docs.streamer.bot/api/faqs.json', { cache: 'no-cache' });
       const data = await res.json();
-      this.faqs = data?.length ? data : this.faqs;
+      this.faqs = (data?.length ? data : this.faqs).map(faq => {
+        const index = faq._file.split('/').at(-1).match(/^(\d+)\./)?.at(1) ?? 1;
+        return {
+          ...faq,
+          index,
+          url: `https://docs.streamer.bot/get-started/faq#faq-${index}`,
+        }
+      });
       this.logger.log(`Fetched ${this.faqs.length} faqs`);
       return this.faqs;
     } catch (e) {
@@ -39,7 +46,7 @@ export class FaqService implements OnModuleInit {
     const embed = new EmbedBuilder()
       .setTitle(faq?.description)
       .setDescription(faq.content)
-      .setURL(`https://docs.streamer.bot/get-started/faq`)
+      .setURL(faq.url ?? `https://docs.streamer.bot/get-started/faq`)
       .setAuthor({
         name: 'Frequently Asked Questions',
         iconURL: 'https://streamer.bot/logo-100x100.png',
