@@ -101,10 +101,10 @@ export class SearchCommands {
     @Options() { search }: SubActionDto,
   ) {
     const subActions = this.searchService.getSubActions();
-    const subAction = subActions.find((subAction) => subAction._path === search);
+    const subAction = subActions.find((subAction) => subAction.path === search);
     if (!subAction) return interaction.reply({ content: 'Sub-Action not found', ephemeral: true });
 
-    const url = `https://docs.streamer.bot${subAction._path}`;
+    const url = `https://docs.streamer.bot${subAction.path}`;
 
     const embed = new EmbedBuilder()
       .setDescription(subAction.description)
@@ -140,10 +140,10 @@ export class SearchCommands {
     @Options() { search }: TriggerDto,
   ) {
     const triggers = this.searchService.getTriggers();
-    const trigger = triggers.find((trigger) => trigger._path === search);
+    const trigger = triggers.find((trigger) => trigger.path === search);
     if (!trigger) return interaction.reply({ content: 'Trigger not found', ephemeral: true });
 
-    const url = `https://docs.streamer.bot${trigger._path}`;
+    const url = `https://docs.streamer.bot${trigger.path}`;
 
     const embed = new EmbedBuilder()
       .setDescription(trigger.description)

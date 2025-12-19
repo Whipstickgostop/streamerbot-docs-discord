@@ -1,17 +1,8 @@
 import { StringOption } from 'necord';
 
 export type SubAction = {
-  _path: string;
-  _dir: string;
-  _draft: boolean;
-  _partial: boolean;
-  _locale: string;
-  _type: string;
-  _id: string;
-  _source: string;
-  _file: string;
-  _stem: string;
-  _extension: string;
+  id: string;
+  path: string;
   body: any;
   title: string;
   description: string;

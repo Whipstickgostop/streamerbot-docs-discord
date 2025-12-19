@@ -31,8 +31,8 @@ export class TriggerAutocompleteInterceptor extends AutocompleteInterceptor {
           .slice(0, 25)
           .map((trigger) => ({
             name: `${trigger.hierarchy.join(' › ')} › ${trigger.title}`.slice(0, 100),
-            value: trigger._path,
-            description: trigger._path,
+            value: trigger.path,
+            description: trigger.path,
           })),
       );
     } catch (e) {

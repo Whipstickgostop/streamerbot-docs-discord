@@ -31,7 +31,7 @@ export class SubActionAutocompleteInterceptor extends AutocompleteInterceptor {
           .slice(0, 25)
           .map((subAction) => ({
             name: `${subAction.hierarchy.join(' › ')} › ${subAction.title}`.slice(0, 100),
-            value: subAction._path,
+            value: subAction.path,
           })),
       );
     } catch (e) {
