@@ -1,21 +1,21 @@
-FROM node:20-slim as base
+FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 # Dev
-FROM base as dev
+FROM base AS dev
 RUN apt-get update && apt-get install -y procps
 WORKDIR /app
 
 # Build
-FROM base as build
+FROM base AS build
 COPY . /app
 WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install -r --frozen-lockfile
 
 # Build [prod]
-FROM build as build-prod
+FROM build AS build-prod
 RUN pnpm deploy --filter @streamerbot/discord-docs-bot --prod /prod
 RUN pnpm --filter @streamerbot/discord-docs-bot build
 

@@ -38,18 +38,18 @@ export class SearchService implements OnModuleInit {
    */
   public async fetchDocs() {
     try {
-      const res = await fetch('https://docs.streamer.bot/api/search.json', { cache: 'no-cache' });
+      const res = await fetch('https://docs.streamer.bot/api/search/docs', { cache: 'no-cache' });
       const data = await res.json();
       this.docs = data?.length ? data : this.docs;
       this.logger.log(`Fetched ${this.docs.length} docs`);
 
-      this.subActions = this.docs.filter((doc) => doc._path.startsWith('/api/sub-actions/')).map(doc => ({
+      this.subActions = this.docs.filter((doc) => doc.path.startsWith('/api/sub-actions/')).map(doc => ({
         ...doc,
-        hierarchy: doc._path.split('/').slice(3, 4).map(part => part.replace(/-/g, ' ')).map(part => part.charAt(0).toUpperCase() + part.slice(1)),
+        hierarchy: doc.path.split('/').slice(3, 4).map(part => part.replace(/-/g, ' ')).map(part => part.charAt(0).toUpperCase() + part.slice(1)),
       }));
-      this.triggers = this.docs.filter((doc) => doc._path.startsWith('/api/triggers/')).map(doc => ({
+      this.triggers = this.docs.filter((doc) => doc.path.startsWith('/api/triggers/')).map(doc => ({
         ...doc,
-        hierarchy: doc._path.split('/').slice(3, 4).map(part => part.replace(/-/g, ' ')).map(part => part.charAt(0).toUpperCase() + part.slice(1)),
+        hierarchy: doc.path.split('/').slice(3, 4).map(part => part.replace(/-/g, ' ')).map(part => part.charAt(0).toUpperCase() + part.slice(1)),
       }));
 
       return this.docs;
@@ -63,16 +63,16 @@ export class SearchService implements OnModuleInit {
    */
   public async fetchCSharpMethods() {
     try {
-      const res = await fetch('https://docs.streamer.bot/api/manifest/csharp', { cache: 'no-cache' });
-      const data = destr<{ methods: CSharpMethod[]; total: number }>(await res.text());
-      this.csharpMethods = data?.methods?.length ? data?.methods.filter((method) => method.hierarchy?.length) : this.csharpMethods;
+      const res = await fetch('https://docs.streamer.bot/api/search/csharp/methods', { cache: 'no-cache' });
+      const data = destr<CSharpMethod[]>(await res.json());
+      this.csharpMethods = data?.length ? data.filter((method) => method.hierarchy?.length) : this.csharpMethods;
       this.csharpMethods.sort(
         (a, b) =>
           a.hierarchy[0]?.localeCompare(b.hierarchy[0]) ||
           a.hierarchy[1]?.localeCompare(b.hierarchy[1]) ||
           a.name.localeCompare(b.name),
       );
-      this.logger.log(`Fetched ${data?.total ?? 0} C# methods`);
+      this.logger.log(`Fetched ${data?.length ?? 0} C# methods`);
 
       return this.csharpMethods
     } catch (e) {

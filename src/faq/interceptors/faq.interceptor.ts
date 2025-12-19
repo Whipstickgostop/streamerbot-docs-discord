@@ -21,7 +21,7 @@ export class FaqAutocompleteInterceptor extends AutocompleteInterceptor {
           .getFaqs()
           .filter((faq) => faq.description.match(new RegExp(focused.value.toString(), 'i')))
           .slice(0, 25)
-          .map((faq) => ({ name: faq.description.slice(0, 100), value: faq._path })),
+          .map((faq) => ({ name: faq.description.slice(0, 100), value: faq.path })),
       );
     } catch (e) {
       this.logger.error('Failed to transform faq options', e);

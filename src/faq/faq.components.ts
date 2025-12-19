@@ -28,8 +28,8 @@ export class FaqComponents {
 
   @StringSelect('FAQ_SELECT_MENU')
   public onStringSelect(@Context() [interaction]: StringSelectContext, @SelectedStrings() selected: string[]) {
-    const faq = this.faqService.getFaqs().find((faq) => faq._path === selected[0]);
-    if (!faq?.description || !faq?.content) return interaction.reply({ content: 'FAQ not found.' });
+    const faq = this.faqService.getFaqs().find((faq) => faq.path === selected[0]);
+    if (!faq?.description || !faq?.body) return interaction.reply({ content: 'FAQ not found.' });
     return interaction.reply({
       embeds: [this.faqService.generateEmbed(faq)],
       ephemeral: true,

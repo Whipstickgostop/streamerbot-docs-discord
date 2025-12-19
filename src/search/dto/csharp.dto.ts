@@ -1,6 +1,9 @@
 import { StringOption } from 'necord';
 
 export type CSharpMethod = {
+  id: string;
+  path: string;
+  title: string;
   type: 'c-sharp-method';
   name: string;
   signature: string;

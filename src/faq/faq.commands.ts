@@ -1,10 +1,9 @@
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
 import { FaqCommandDto } from './dto/faq.dto';
 import { FaqService } from './faq.service';
 import { FaqAutocompleteInterceptor } from './interceptors/faq.interceptor';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { SearchService } from '../search/search.service';
 
 @Injectable()
 export class FaqCommands {
@@ -21,8 +20,8 @@ export class FaqCommands {
   })
   public async onFaq(@Context() [interaction]: SlashCommandContext, @Options() { search }: FaqCommandDto) {
     try {
-      const faq = this.faqService.getFaqs().find((faq) => faq._path === search);
-      if (!faq?.description || !faq?.content) return interaction.reply({ content: 'FAQ not found.' });
+      const faq = this.faqService.getFaqs().find((faq) => faq.path === search);
+      if (!faq?.description || !faq?.body) return interaction.reply({ content: 'FAQ not found.' });
 
       // Add link to docs
       const docsButton = new ButtonBuilder()

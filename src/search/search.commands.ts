@@ -1,15 +1,14 @@
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
-import { SearchService } from './search.service';
-import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
-import { CSharpCommandDto } from './dto/csharp.dto';
-import { CSharpMethodAutocompleteInterceptor } from './interceptors/csharp.interceptor';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
-import slugify from 'slugify';
-import { SubActionAutocompleteInterceptor } from './interceptors/sub-action.interceptor';
+import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
+import { FaqService } from '../faq/faq.service';
+import { CSharpCommandDto } from './dto/csharp.dto';
 import { SubActionDto } from './dto/sub-action.dto';
 import { TriggerDto } from './dto/trigger.dto';
+import { CSharpMethodAutocompleteInterceptor } from './interceptors/csharp.interceptor';
+import { SubActionAutocompleteInterceptor } from './interceptors/sub-action.interceptor';
 import { TriggerAutocompleteInterceptor } from './interceptors/trigger.interceptor';
-import { FaqService } from '../faq/faq.service';
+import { SearchService } from './search.service';
 
 @Injectable()
 export class SearchCommands {
@@ -66,7 +65,7 @@ export class SearchCommands {
     const method = methods[0];
     if (!method) return interaction.reply({ content: 'Method not found', ephemeral: true });
 
-    const url = `https://docs.streamer.bot/api/csharp/${method.hierarchy.map((h: string) => slugify(h, { lower: true })).join('/')}#${method.name}`;
+    const url = `https://docs.streamer.bot${method.path}`;
 
     const embed = new EmbedBuilder()
       .setDescription(`\`\`\`cs\n${method.signature}\n\`\`\``)

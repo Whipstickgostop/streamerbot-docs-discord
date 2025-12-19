@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { EmbedBuilder, StringSelectMenuBuilder } from 'discord.js';
 import { FaqItem } from './dto/faq.dto';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class FaqService implements OnModuleInit {
@@ -22,20 +22,16 @@ export class FaqService implements OnModuleInit {
   @Cron('0 * * * *')
   public async fetchFaqs() {
     try {
-      const res = await fetch('https://docs.streamer.bot/api/faqs.json', { cache: 'no-cache' });
+      const res = await fetch('https://docs.streamer.bot/api/search/faqs', { cache: 'no-cache' });
       const data = await res.json();
-      this.faqs = (data?.length ? data : this.faqs).map(faq => {
-        const index = faq._file.split('/').at(-1).match(/^(\d+)\./)?.at(1) ?? 1;
-        return {
-          ...faq,
-          index,
-          url: `https://docs.streamer.bot/get-started/faq#faq-${index}`,
-        }
-      });
+      this.faqs = (data?.length ? data : this.faqs).map((faq: FaqItem) => ({
+        ...faq,
+        url: `https://docs.streamer.bot${faq.path}`,
+      }));
       this.logger.log(`Fetched ${this.faqs.length} faqs`);
       return this.faqs;
     } catch (e) {
-      this.logger.error('Failed to fetch faqs', e);
+      this.logger.error('Failed to fetch FAQs', e);
     }
   }
 
@@ -45,18 +41,20 @@ export class FaqService implements OnModuleInit {
   public generateEmbed(faq: FaqItem) {
     const embed = new EmbedBuilder()
       .setTitle(faq?.description)
-      .setDescription(faq.content)
-      .setURL(faq.url ?? `https://docs.streamer.bot/get-started/faq`)
+      .setDescription(faq.body)
+      .setURL(faq.url ?? `https://docs.streamer.bot/faq`)
       .setAuthor({
         name: 'Frequently Asked Questions',
         iconURL: 'https://streamer.bot/logo-100x100.png',
-        url: 'https://docs.streamer.bot/get-started/faq',
+        url: 'https://docs.streamer.bot/faq',
       })
       .setColor('#a257ed');
 
     // Automatically extract and embed the first image in the document
-    if (faq.images?.at(0)) {
-      embed.setImage(faq.images[0]);
+    const image = faq.body.match(/!\[.*?\]\((https?:\/\/.*?)\)/);
+    if (image?.[1]) {
+      embed.setImage(image[1]);
+      embed.setDescription(faq.body.replace(image[0], ''));
     }
 
     return embed;
@@ -68,7 +66,7 @@ export class FaqService implements OnModuleInit {
   public generateMenuComponent() {
     const options = this.getFaqs().map((faq) => ({
       label: faq.description.slice(0, 100),
-      value: faq._path,
+      value: faq.path,
     }));
     return new StringSelectMenuBuilder()
       .setCustomId('FAQ_SELECT_MENU')
