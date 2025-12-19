@@ -1,3 +1,4 @@
+includeWorkspaceRoot: true
 injectWorkspacePackages: true
 onlyBuiltDependencies:
   - '@nestjs/core'
